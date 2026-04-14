@@ -11,47 +11,57 @@ def build_prompt(diff):
     return textwrap.dedent(f"""
     You are a senior software engineer performing an enterprise-grade pull request review.
 
-Review the provided git diff for correctness, reliability, security, performance, maintainability, test quality, and operational risk.
+    Review the provided git diff for correctness, reliability, security, performance,
+    maintainability, test quality, and operational risk.
 
-Rules:
+    Rules:
+    - Be specific, skeptical, and evidence-based.
+    - Report only issues supported by the diff.
+    - Prioritize real risks over style comments.
+    - Separate confirmed issues from open questions.
+    - Consider backward compatibility, failure handling, observability, and rollout safety.
+    - Ignore purely stylistic issues unless they hide a correctness or maintainability problem.
+    - Report at most 5 findings, ordered by severity.
+    - Prefer blocking issues, security risks, regression risks, and missing tests.
 
-* Be specific, skeptical, and evidence-based.
-* Report only issues supported by the diff.
-* Prioritize real risks over style comments.
-* Separate confirmed issues from open questions.
-* Consider backward compatibility, failure handling, observability, and rollout safety.
+    Evaluate for:
+    - Functional correctness and business logic errors
+    - Edge cases and null/empty handling
+    - Security issues including injection, auth, access control, secret leakage,
+      unsafe deserialization, SSRF, XSS, CSRF, and trust-boundary violations
+    - Performance regressions, unnecessary allocations, N+1 patterns, blocking I/O,
+      inefficient queries, and scalability concerns
+    - Reliability concerns such as retries, timeouts, idempotency, race conditions,
+      partial failure handling, and transaction boundaries
+    - API and schema compatibility, migration safety, and breaking changes
+    - Maintainability, readability, duplication, coupling, and unclear abstractions
+    - Logging, metrics, tracing, and debuggability
+    - Test gaps and missing validation
+    - CI/CD or operational concerns if visible in the diff
 
-Return markdown only.
+    Return markdown only.
 
-Use these sections exactly:
+    Use these sections exactly:
+    ## PR Summary
+    ## Risk Level
+    ## Findings
+    ## Suggested Fixes
+    ## Test Recommendations
+    ## Merge Recommendation
 
-## PR Summary
-
-## Risk Level
-
-## Findings
-
-## Suggested Fixes
-
-## Test Recommendations
-
-## Merge Recommendation
-
-Requirements:
-
-* PR Summary: 2 to 4 sentences.
-* Risk Level: Low / Medium / High / Critical with one-line reason.
-* Findings: only the most important issues. For each finding include:
-
-  * Severity
-  * Title
-  * Why it matters
-  * Evidence
-  * Recommendation
-  * Confidence
-    * Suggested Fixes: include patch-style snippets only when confident.
-    * Test Recommendations: list the highest-value missing tests.
-    * Merge Recommendation: Approve / Approve with minor comments / Request changes / Block.
+    Requirements:
+    - PR Summary: 2 to 4 sentences.
+    - Risk Level: Low / Medium / High / Critical with one-line reason.
+    - Findings: only the most important issues. For each finding include:
+      - Severity
+      - Title
+      - Why it matters
+      - Evidence
+      - Recommendation
+      - Confidence
+    - Suggested Fixes: include patch-style snippets only when confident.
+    - Test Recommendations: list the highest-value missing tests.
+    - Merge Recommendation: Approve / Approve with minor comments / Request changes / Block.
 
     If there are no significant issues, say so clearly.
     If context is missing, state the limitation explicitly.
@@ -59,7 +69,6 @@ Requirements:
 
     Diff:
     {diff}
-
     """)
 
 def call_generativelanguage(api_key, model, prompt, max_tokens=512, temperature=0.0):
