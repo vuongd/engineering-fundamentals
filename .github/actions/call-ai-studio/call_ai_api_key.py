@@ -22,14 +22,12 @@ Diff:
 def call_ai_api_key(api_key, model, prompt, max_tokens=800):
     # Use AI Studio REST endpoint with API key auth (example endpoint — adapt if your region/endpoint differs)
     # Some accounts use an OpenAI-compatible endpoint; adjust URL format per your Google AI Studio docs.
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
     payload = {
-        "instances": [{"content": prompt}],
-        "parameters": {"maxOutputTokens": int(max_tokens)}
-    }
+        "contents": [{"parts": prompt}]    }
 
 
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "X-goog-api-key": api_key}
     resp = requests.post(url, headers=headers, json=payload, timeout=120)
     resp.raise_for_status()
     return resp.json()
