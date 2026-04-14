@@ -33,7 +33,7 @@ jobs:
         run: |
           python .github/actions/call-ai-studio/call_ai_api_key.py \
             --api-key "${{ secrets.GOOGLE_API_KEY }}" \
-            --model "${{ secrets.AI_MODEL_ID }}" \
+            --model gemini-3-flash-preview \
             --diff-file pr.diff \
             --max-tokens "${{ secrets.MAX_TOKENS || '800' }}" \
             --out-file pr_summary.txt
