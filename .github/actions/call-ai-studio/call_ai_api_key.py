@@ -9,14 +9,57 @@ def load_diff(path):
 
 def build_prompt(diff):
     return textwrap.dedent(f"""
-    Review this git unified diff and provide:
-    1) 2-3 line PR summary.
-    2) Bullet list of potential issues (bug, security, style) with severity.
-    3) Suggested fixes (code snippets or patch hunks) when applicable.
-    4) Confidence and next steps.
+    You are a senior software engineer performing an enterprise-grade pull request review.
+
+Review the provided git diff for correctness, reliability, security, performance, maintainability, test quality, and operational risk.
+
+Rules:
+
+* Be specific, skeptical, and evidence-based.
+* Report only issues supported by the diff.
+* Prioritize real risks over style comments.
+* Separate confirmed issues from open questions.
+* Consider backward compatibility, failure handling, observability, and rollout safety.
+
+Return markdown only.
+
+Use these sections exactly:
+
+## PR Summary
+
+## Risk Level
+
+## Findings
+
+## Suggested Fixes
+
+## Test Recommendations
+
+## Merge Recommendation
+
+Requirements:
+
+* PR Summary: 2 to 4 sentences.
+* Risk Level: Low / Medium / High / Critical with one-line reason.
+* Findings: only the most important issues. For each finding include:
+
+  * Severity
+  * Title
+  * Why it matters
+  * Evidence
+  * Recommendation
+  * Confidence
+    * Suggested Fixes: include patch-style snippets only when confident.
+    * Test Recommendations: list the highest-value missing tests.
+    * Merge Recommendation: Approve / Approve with minor comments / Request changes / Block.
+
+    If there are no significant issues, say so clearly.
+    If context is missing, state the limitation explicitly.
+    If a risk is uncertain, label it as Open Question.
 
     Diff:
-    {diff}
+    {{diff}}
+
     """)
 
 def call_generativelanguage(api_key, model, prompt, max_tokens=512, temperature=0.0):
