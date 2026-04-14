@@ -58,7 +58,7 @@ Requirements:
     If a risk is uncertain, label it as Open Question.
 
     Diff:
-    {{diff}}
+    {diff}
 
     """)
 
