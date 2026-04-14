@@ -21,11 +21,17 @@ jobs:
 
       - name: Get PR diff
         run: |
-          git fetch origin "${{ github.event.pull_request.base.ref }}" --depth=1
-          git --no-pager diff --unified=0 \
-            "origin/${{ github.event.pull_request.base.ref }}...${{ github.event.pull_request.head.sha }}" \
-            > pr.diff || true
+          run: |
+            git fetch --no-tags --prune --depth=0 origin \
+              ${{ github.event.pull_request.base.ref }}
 
+            git fetch --no-tags --prune --depth=0 origin \
+              ${{ github.event.pull_request.head.sha }}
+
+            git diff --unified=0 \
+              origin/${{ github.event.pull_request.base.ref }} \
+              ${{ github.event.pull_request.head.sha }} \
+              > pr.diff || true
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
